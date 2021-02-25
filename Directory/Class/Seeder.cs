@@ -31,7 +31,7 @@ namespace Product.Class
             }           
         }
 
-        private static void AddParent(MyContext context, string urlSlug, string name)
+        public static void AddParent(MyContext context, string urlSlug, string name)
         {
             context.Products.Add(new Product
             {
@@ -42,7 +42,7 @@ namespace Product.Class
             context.SaveChanges();
         }
 
-        private static void AddChildParent(MyContext context, string parentSlug, string urlSlug, string name)
+        public static void AddChildParent(MyContext context, string parentSlug, string urlSlug, string name)
         {
             var parent = context.Products.SingleOrDefault(x => x.UrlSlug == parentSlug);
             context.Products.Add(new Product

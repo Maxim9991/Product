@@ -33,7 +33,7 @@ namespace Product.Class
 
         public static void AddParent(MyContext context, string urlSlug, string name)
         {
-            context.Products.Add(new Product
+            context.Products.Add(new ProductAll
             {
                 Name = name,
                 ParentId = null,
@@ -45,7 +45,7 @@ namespace Product.Class
         public static void AddChildParent(MyContext context, string parentSlug, string urlSlug, string name)
         {
             var parent = context.Products.SingleOrDefault(x => x.UrlSlug == parentSlug);
-            context.Products.Add(new Product
+            context.Products.Add(new ProductAll
             {
                 Name = name,
                 ParentId = parent.Id,

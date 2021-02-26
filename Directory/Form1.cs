@@ -1,12 +1,11 @@
-﻿using Product.Class;
+﻿using NickBuhro.Translit;
+using Product.Class;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -45,33 +44,33 @@ namespace Product
                 AddParent(item);
             }
             tvProduct.Focus();
-
-            cbCategori();
         }
 
-        private void cbCategori()
+        private void Refresh()
         {
-            ComboBox cbCategory = new ComboBox();
-
-            cbCategory = new System.Windows.Forms.ComboBox();
-
-            cbCategory.FormattingEnabled = true;
-            foreach (var item in context.Products)
+            tvProduct.Nodes.Clear();
+            var categories = context.Products.Select(c => new ProductGroup
             {
-                if(item.ParentId == null)
-                {
-                    object[] row =
-                    {
-                        $"{item.Name}"
-                    };
-                    cbCategory.Items.AddRange(row);
-                }
+                Id = c.Id,
+                Name = c.Name,
+                UrlName = c.UrlSlug,
+                ParentId = c.ParentId
+            }).ToList();
+
+            var tree = categories.BuildTree();
+
+            var list = context.Products.Where(x => x.ParentId == null).Select(x => new ProductView
+            {
+                Id = x.Id,
+                Name = x.Name,
+                UrlSlug = x.UrlSlug
+            }).ToList();
+
+            foreach (var item in list)
+            {
+                AddParent(item);
             }
-            cbCategory.Location = new System.Drawing.Point(376, 183);
-            cbCategory.Name = "cbCategory";
-            cbCategory.Size = new System.Drawing.Size(121, 23);
-            cbCategory.TabIndex = 3;
-            gbProduct.Controls.Add(cbCategory);
+            tvProduct.Focus();
         }
 
         private void AddParent(ProductView productView)
@@ -90,13 +89,12 @@ namespace Product
             node.Text = productView.Name;
             node.Name = productView.Id.ToString();
             node.Tag = productView;
-            //node.Nodes.Add("");
             parent.Nodes.Add(node);
         }
 
         private void tvProduct_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if(e.Node.Nodes[0].Text == "")
+            if (e.Node.Nodes[0].Text == "")
             {
                 var parent = e.Node;
                 var parentId = (parent.Tag as ProductView).Id;
@@ -111,22 +109,67 @@ namespace Product
 
                 foreach (var item in list)
                 {
-                    AddChildParent(parent , item);
+                    AddChildParent(parent, item);
                 }
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            var latin = Transliteration.CyrillicToLatin(tbNameProductAdd.Text, Language.Russian);
 
-            //Add Database kategori + child
-            
-            //string urlSlug = "Molichni";
-            //Seeder.AddParent(context, urlSlug, "Молочні");
-            //Seeder.AddChildParent(context, urlSlug, "moloko", "Молоко");
-            //Seeder.AddChildParent(context, urlSlug, "yogurt", "Йогурт");
-            //Seeder.AddChildParent(context, urlSlug, "kefir", "Кефір");
-            
+            Seeder.AddParent(context, latin, tbNameProductAdd.Text);
+
+            tvProduct.Nodes.Add(tbNameProductAdd.Text);
+
+            //Refresh();
+        }
+
+        private void btnAddChild_Click(object sender, EventArgs e)
+        {
+            int id = int.Parse(tvProduct.SelectedNode.Name);
+            ProductAll t = context.Products
+                .SingleOrDefault(x => x.Id == id);
+
+            string urlSlug = t.UrlSlug;
+
+            var latin = Transliteration.CyrillicToLatin(tbSelectedAddChild.Text, Language.Russian);
+
+            Seeder.AddChildParent(context, urlSlug, latin, tbSelectedAddChild.Text);
+
+            tvProduct.SelectedNode.Nodes.Add(tbSelectedAddChild.Text);
+        }
+
+        private void btnDel_Click(object sender, EventArgs e)
+        {
+            int id = int.Parse(tvProduct.SelectedNode.Name);
+            ProductAll t = context.Products
+                .SingleOrDefault(x => x.Id == id);
+
+            context.Products.Remove(t);
+            context.SaveChanges();
+            tvProduct.SelectedNode.Remove();
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            int id = int.Parse(tvProduct.SelectedNode.Name);
+            ProductAll t = context.Products
+                .SingleOrDefault(x => x.Id == id);
+
+
+            t.Name = tbEdit.Text;
+            context.SaveChanges();
+        }
+
+        private void tvProduct_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            tbEdit.Text = tvProduct.SelectedNode.Text;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

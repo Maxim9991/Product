@@ -7,7 +7,7 @@ using System.Text;
 namespace Product.Class
 {
     [Table("tblProduct")]
-    public class Product
+    public class ProductAll
     {
         [Key]
         public int Id { get; set; }
@@ -21,6 +21,6 @@ namespace Product.Class
         [ForeignKey("Parent")]
         public int ? ParentId { get; set; }
 
-        public virtual Product Parent { get; set; }
+        public virtual ProductAll Parent { get; set; }
     }
 }

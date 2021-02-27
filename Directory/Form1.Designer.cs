@@ -89,6 +89,7 @@ namespace Product
             this.tbEdit.Name = "tbEdit";
             this.tbEdit.Size = new System.Drawing.Size(124, 23);
             this.tbEdit.TabIndex = 9;
+            this.tbEdit.TextChanged += new System.EventHandler(this.tbEdit_TextChanged);
             // 
             // btnEdit
             // 
@@ -135,6 +136,7 @@ namespace Product
             this.tbSelectedAddChild.Name = "tbSelectedAddChild";
             this.tbSelectedAddChild.Size = new System.Drawing.Size(124, 23);
             this.tbSelectedAddChild.TabIndex = 4;
+            this.tbSelectedAddChild.TextChanged += new System.EventHandler(this.tbSelectedAddChild_TextChanged);
             // 
             // lblNewCategory
             // 
@@ -161,6 +163,7 @@ namespace Product
             this.tbNameProductAdd.Name = "tbNameProductAdd";
             this.tbNameProductAdd.Size = new System.Drawing.Size(124, 23);
             this.tbNameProductAdd.TabIndex = 1;
+            this.tbNameProductAdd.TextChanged += new System.EventHandler(this.tbNameProductAdd_TextChanged);
             // 
             // tvProduct
             // 

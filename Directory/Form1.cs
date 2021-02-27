@@ -15,6 +15,10 @@ namespace Product
         {
             InitializeComponent();
             Seeder.SeedDatabase(context);
+
+            btnAddProduct.Enabled = false;
+            btnAddChild.Enabled = false;
+            btnEdit.Enabled = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -191,6 +195,42 @@ namespace Product
             {
                 tvProduct.Focus();
                 tvProduct.SelectedNode = treeNode;
+            }
+        }
+
+        private void tbNameProductAdd_TextChanged(object sender, EventArgs e)
+        {
+            if(tbNameProductAdd.Text == "")
+            {
+                btnAddProduct.Enabled = false;
+            }
+            else
+            {
+                btnAddProduct.Enabled = true;
+            }
+        }
+
+        private void tbSelectedAddChild_TextChanged(object sender, EventArgs e)
+        {
+            if(tbSelectedAddChild.Text == "")
+            {
+                btnAddChild.Enabled = false;
+            }
+            else
+            {
+                btnAddChild.Enabled = true;
+            }
+        }
+
+        private void tbEdit_TextChanged(object sender, EventArgs e)
+        {
+            if (tbEdit.Text == "")
+            {
+                btnEdit.Enabled = false;
+            }
+            else
+            {
+                btnEdit.Enabled = true;
             }
         }
     }

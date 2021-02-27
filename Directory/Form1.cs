@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Product
@@ -46,18 +43,10 @@ namespace Product
             tvProduct.Focus();
         }
 
-        private void Refresh()
+  
+        public override void Refresh()
         {
             tvProduct.Nodes.Clear();
-            var categories = context.Products.Select(c => new ProductGroup
-            {
-                Id = c.Id,
-                Name = c.Name,
-                UrlName = c.UrlSlug,
-                ParentId = c.ParentId
-            }).ToList();
-
-            var tree = categories.BuildTree();
 
             var list = context.Products.Where(x => x.ParentId == null).Select(x => new ProductView
             {
@@ -122,7 +111,9 @@ namespace Product
 
             tvProduct.Nodes.Add(tbNameProductAdd.Text);
 
-            //Refresh();
+            Refresh();
+
+            tbNameProductAdd.Text = "";
         }
 
         private void btnAddChild_Click(object sender, EventArgs e)
@@ -138,6 +129,10 @@ namespace Product
             Seeder.AddChildParent(context, urlSlug, latin, tbSelectedAddChild.Text);
 
             tvProduct.SelectedNode.Nodes.Add(tbSelectedAddChild.Text);
+
+            Refresh();
+
+            tbSelectedAddChild.Text = "";
         }
 
         private void btnDel_Click(object sender, EventArgs e)
@@ -149,6 +144,8 @@ namespace Product
             context.Products.Remove(t);
             context.SaveChanges();
             tvProduct.SelectedNode.Remove();
+
+            Refresh();
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -159,7 +156,12 @@ namespace Product
 
 
             t.Name = tbEdit.Text;
+
+
+            tvProduct.SelectedNode.Text = tbEdit.Text;
             context.SaveChanges();
+
+            Refresh();
         }
 
         private void tvProduct_AfterSelect(object sender, TreeViewEventArgs e)
@@ -169,7 +171,27 @@ namespace Product
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+            List<TreeNode> Tnode = new List<TreeNode>();
+            void Find(TreeNodeCollection Nodes, string str)
+            {
 
+                foreach (TreeNode node in Nodes)
+                {
+                    if (node.Text.Contains(str) && node.Nodes.Count != 0)
+                        Tnode.Add(node);
+                    if (node.Nodes.Count > 0)
+                        Find(node.Nodes, str);
+                }
+
+            }
+
+            Tnode.Clear();
+            Find(tvProduct.Nodes, tbSearch.Text);
+            foreach (TreeNode treeNode in Tnode)
+            {
+                tvProduct.Focus();
+                tvProduct.SelectedNode = treeNode;
+            }
         }
     }
 }

@@ -194,6 +194,7 @@ namespace Product
             foreach (TreeNode treeNode in Tnode)
             {
                 tvProduct.Focus();
+                treeNode.Expand();
                 tvProduct.SelectedNode = treeNode;
             }
         }
